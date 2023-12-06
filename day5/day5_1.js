@@ -58,7 +58,7 @@ fs.readFile(input, "utf8", (err, data) => {
             const row = currentMap[i];
             const maxRange = row.source + row.length;
             // console.log("maxRange: ", maxRange);
-            if (value >= row.source && value <= maxRange) {
+            if (value >= row.source && value < maxRange) {
                 const diff = row.destination - row.source;
                 // if (diff < 0) console.log("ERROR: diff is negative");
                 newValue = value + diff;
