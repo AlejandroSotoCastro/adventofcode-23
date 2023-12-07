@@ -18,13 +18,22 @@ cardValueMap = {
     2: 2,
 };
 
-// hand type
+// hand types
 
-// Five of a kind
 handTypes = {
     6: /([A-Z\d])\1{4}/, // 5 of a kind
     5: /([A-Z\d])\1{3}/, // 4 of a kind
-    4: /([A-Z\d])\1{2}([A-Z\d])\2/, // full house
+    4: {
+        test: (value) => {
+            // check full house without regex
+            const valueMap = {};
+            value.split("").forEach((card) => {
+                valueMap[card] = valueMap[card] ? valueMap[card] + 1 : 1;
+            });
+            const values = Object.values(valueMap);
+            return values.includes(3) && values.includes(2);
+        },
+    },
     3: /([A-Z\d])\1{2}/, // 3 of a kind
     2: /([A-Z\d])\1[A-Z\d]?([A-Z\d])\2/, // 2 pair
     1: /([A-Z\d])\1/, // 1 pair
