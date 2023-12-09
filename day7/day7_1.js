@@ -79,7 +79,6 @@ fs.readFile(input, "utf8", (_err, data) => {
             if (a.type === b.type) {
                 for (let i = 0; i < a.hand.length; i++) {
                     if (a.hand[i] !== b.hand[i]) {
-                        if (i === 5 || i === 4) console.log("HEY HEY HEY", i, a, b);
                         return cardValueMap[b.hand[i]] - cardValueMap[a.hand[i]];
                     }
                 }
