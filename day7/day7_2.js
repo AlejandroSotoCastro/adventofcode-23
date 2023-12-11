@@ -2,6 +2,7 @@ const fs = require("fs");
 
 // const input = "./day7/testInput1.txt";
 const input = "./day7/input.txt";
+// const input = "./day7/test_input_all_options_joker.txt";
 cardValueMap = {
     A: 14,
     K: 13,
@@ -83,25 +84,18 @@ fs.readFile(input, "utf8", (_err, data) => {
         if (!line) return;
         const [handRaw, bid] = line.split(" ");
         const hand = { hand: handRaw, type: Number(calculateType(handRaw)), bid: Number(bid) };
-        if (hand.hand.match("JJ") && hand.type === 4) {
-            const bla = hand.hand;
-        }
+
         hands.push(hand);
     });
 
     const sortedHands = sortHands(hands);
     const winnings = calcWinnings(sortedHands);
-    // console.log("winnings: ", winnings);
     const sum = winnings.reduce((a, b) => a + b, 0);
     console.log("sum: ", sum);
 
     function calculateType(hand) {
-        //order array
-        // const orderedHand = hand.split("").sort((a, b) => {
-        //     return cardValueMap[b] - cardValueMap[a];
-        // });
-
         let handString = hand;
+
         if (hand.match(JOKER)) {
             const handWithFz = calcFrequency(hand);
             // { '4': 1, '6': 1, J: 1, T: 2 }
@@ -113,10 +107,12 @@ fs.readFile(input, "utf8", (_err, data) => {
                     cardFqzCounter = handWithFz[card];
                 }
             });
+
             // console.log(handWithFz, cardToReplace);
             //find the card with highest frequenciy
             // replace all J by that hand
             handString = handString.replace(JOKER, cardToReplace);
+            if (hand.match("JJJJJ")) handString = "JJJJJ";
         }
 
         // get the max value
