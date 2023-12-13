@@ -1,31 +1,38 @@
 const fs = require("fs");
-const { to } = require("mathjs");
 
-const input = "./day10/testInput.txt";
-// const input = "./day10/input.txt";
+// const input = "./day10/testInput4.txt";
+const input = "./day10/input.txt";
 const grid = [];
 const S = { x: 0, y: 0, symbol: "S" };
 const map = {
     ".": null,
-    "|": { x: 0, y: 1, rot: 0 },
-    "-": { x: 1, y: 0, rot: 0 },
-    L: { x: 1, y: 1, rot: 90 },
-    J: { x: 1, y: 1, rot: -270 },
-    7: { x: 0, y: 1, rot: -90 },
-    F: { x: 1, y: 1, rot: 270 },
+    "│": { x: 0, y: 1, rot: 0 },
+    "─": { x: 1, y: 0, rot: 0 },
+    "└": { x: 1, y: 1, rot: 90 },
+    "┘": { x: 1, y: 1, rot: -270 },
+    "┐": { x: 0, y: 1, rot: -90 },
+    "┌": { x: 1, y: 1, rot: 270 },
 };
 
 // can be x or y
 let initialDirection = "x";
 let direction = initialDirection;
 // can be 1 or -1
-let initialWay = 1;
+let initialWay = -1;
 let way = initialWay;
 
 fs.readFile(input, "utf8", (_err, data) => {
     data.split(/\r?\n/).forEach((line, index) => {
         if (!line) return;
-        const row = line.split("");
+        const formatedLine = line
+            .replace(/-/g, "─")
+            .replace(/\|/g, "│")
+            .replace(/F/g, "┌")
+            .replace(/7/g, "┐")
+            .replace(/L/g, "└")
+            .replace(/J/g, "┘");
+
+        const row = formatedLine.split("");
         const isThereS = row.findIndex((pipe) => pipe === S.symbol);
         if (isThereS >= 0) {
             S.x = isThereS;
@@ -71,7 +78,7 @@ fs.readFile(input, "utf8", (_err, data) => {
         rotate(map[nextPoint.symbol].rot);
         currentPoint = nextPoint;
     }
-    console.log(steps);
+    console.log(steps / 2);
 
     function rotate(degrees) {
         if (degrees === 90 || degrees === -90) {
@@ -104,13 +111,14 @@ fs.readFile(input, "utf8", (_err, data) => {
         direction = initialDirection;
         switch (tries) {
             case 1:
-                toggleWay();
+                toggleDirection();
                 break;
             case 2:
+                toggleWay();
                 toggleDirection();
                 break;
             case 3:
-                toggleWay();
+                toggleDirection();
                 break;
             default:
                 console.error("Something went wrong");
