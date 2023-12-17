@@ -1,63 +1,61 @@
 const fs = require("fs");
 
-const input = "./day13/testInput.txt";
-// const input = "./day13/input.txt";
-
-grid = [];
+// const input = "./day13/testInput.txt";
+const input = "./day13/input.txt";
+let counter = 0;
 fs.readFile(input, "utf8", (_err, data) => {
     data.split(/\r\n\r\n/).forEach((patternRaw, index) => {
         if (!patternRaw) return;
-        console.log(`Pattern ${index + 1}`);
-        summarizePattern(patternRaw);
+        // console.log(`Pattern ${index + 1}`);
+        counter += summarizePattern(patternRaw);
     });
-
+    console.log(counter);
     function summarizePattern(patternRaw) {
         const pattern = patternRaw.split(/\r?\n/);
-        const reversedPattern = pattern.reverse();
+        const vertical = mirrorPositions(pattern);
+        const transposed = transpose(pattern);
+        const horizontal = mirrorPositions(transposed);
+        return vertical + horizontal * 100;
+    }
 
-        // check if the first row is repeated
-        const firstRowRepeated = isRowRepeated(pattern);
-        const lastRowRepeated = isRowRepeated(reversedPattern);
+    function mirrorPositions(pattern) {
+        const arr = rowMirrors(pattern);
+        return intersection(arr).reduce((p, c) => p + c, 0);
+    }
+    function isMirror(left, right) {
+        let big, small, reversedBig;
 
-        // if first row is =  to row num `firstRowRepeated` then row2 is = to row num `lastRowRepeated`-1 and so on
-        let isPattern = false;
-        if (firstRowRepeated) {
-            isPattern = matchPattern(pattern, firstRowRepeated);
-        } else if (lastRowRepeated) {
-            isPattern = matchPattern(reversedPattern, lastRowRepeated);
+        if (left.length > right.length) {
+            [small, big] = [right, left];
+            reversedBig = big.split("").reverse().join("").slice(0, small.length);
+        } else {
+            [small, big] = [left, right];
+            reversedBig = big.slice(0, small.length).split("").reverse().join("");
         }
 
-        // const patternTransposed = transpose(pattern);
-        console.log(isPattern);
+        return reversedBig === small;
+    }
+
+    function rowMirrors(pattern) {
+        return pattern.map((row) => {
+            const lineMirrors = [];
+            for (let i = 1; i < row.length; i++) {
+                // split the row at i and return both substrings
+                const left = row.substring(0, i);
+                const right = row.substring(i);
+                if (isMirror(left, right)) {
+                    lineMirrors.push(i);
+                }
+            }
+            return lineMirrors;
+        });
+    }
+
+    function intersection(arrays) {
+        return arrays.reduce((a, b) => a.filter((c) => b.includes(c)));
     }
 
     function transpose(matrix) {
-        return matrix[0].map((col, i) => matrix.map((row) => row[i]));
-    }
-
-    // function that checks if a certain row is repeated, takes a pattern
-    // returns the index of the repeated row or false
-    function isRowRepeated(pattern) {
-        const row = pattern[0];
-
-        // from the last row to the second row
-        for (let i = pattern.length - 1; i > 0; i--) {
-            if (pattern[i] === row) {
-                return i;
-            }
-        }
-        return false;
-    }
-    function matchPattern(pattern, isRowRepeatedIndex) {
-        let flag = true;
-        outerLoop: for (let i = 0; i < isRowRepeatedIndex / 2; i++) {
-            for (let j = isRowRepeatedIndex; j > 0; j--) {
-                if (pattern[i] !== pattern[j]) {
-                    flag = false;
-                    break outerLoop;
-                }
-            }
-        }
-        return flag;
+        return Array.from(matrix[0]).map((col, i) => matrix.map((row) => row[i]).join(""));
     }
 });
