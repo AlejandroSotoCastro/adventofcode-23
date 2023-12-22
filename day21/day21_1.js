@@ -1,5 +1,4 @@
 const fs = require("fs");
-const { i } = require("mathjs");
 
 // const input = "./day21/testInput.txt";
 const input = "./day21/input.txt";
